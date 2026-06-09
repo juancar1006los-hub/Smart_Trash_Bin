@@ -1,324 +1,191 @@
--- phpMyAdmin SQL Dump
--- version 5.2.0
--- https://www.phpmyadmin.net/
---
--- Host: localhost:3306
--- Generation Time: Jun 09, 2026 at 04:55 AM
--- Server version: 9.7.0
--- PHP Version: 8.1.10
+CREATE DATABASE smart_trash_bin;
+USE smart_trash_bin;
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
+CREATE TABLE lokasi (
+    id_lokasi INT AUTO_INCREMENT,
+    nama_lokasi VARCHAR(100) NOT NULL,
+    alamat VARCHAR(200) NOT NULL,
 
+    PRIMARY KEY (id_lokasi)
+);
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+CREATE TABLE trash_bin (
+    id_bin INT AUTO_INCREMENT,
+    nama_bin VARCHAR(100) NOT NULL,
+    kapasitas_maks INT NOT NULL,
+    status_bin VARCHAR(20) DEFAULT 'NORMAL',
+    id_lokasi INT,
 
---
--- Database: `uas_smart_trash_bin`
---
+    PRIMARY KEY (id_bin),
 
--- --------------------------------------------------------
+    FOREIGN KEY (id_lokasi)
+    REFERENCES lokasi(id_lokasi)
+);
 
---
--- Table structure for table `jadwal_pengangkutan`
---
+CREATE TABLE sensor_data (
+    id_sensor INT AUTO_INCREMENT,
+    id_bin INT,
+    kapasitas_terisi INT,
+    berat_sampah DECIMAL(10,2),
+    waktu_baca TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-CREATE TABLE `jadwal_pengangkutan` (
-  `id_jadwal` int NOT NULL,
-  `id_bin` int DEFAULT NULL,
-  `id_petugas` int DEFAULT NULL,
-  `tanggal_pengangkutan` date DEFAULT NULL,
-  `status_jadwal` varchar(20) DEFAULT 'MENUNGGU'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+    PRIMARY KEY (id_sensor),
 
---
--- Dumping data for table `jadwal_pengangkutan`
---
+    FOREIGN KEY (id_bin)
+    REFERENCES trash_bin(id_bin)
+);
 
-INSERT INTO `jadwal_pengangkutan` (`id_jadwal`, `id_bin`, `id_petugas`, `tanggal_pengangkutan`, `status_jadwal`) VALUES
-(1, 2, 1, '2026-06-06', 'MENUNGGU'),
-(2, 4, 2, '2026-06-06', 'MENUNGGU'),
-(3, 1, 3, '2026-06-06', 'SELESAI'),
-(4, 3, 4, '2026-06-06', 'SELESAI'),
-(5, 5, 5, '2026-06-06', 'MENUNGGU');
+CREATE TABLE petugas (
+    id_petugas INT AUTO_INCREMENT,
+    nama_petugas VARCHAR(100) NOT NULL,
+    no_hp VARCHAR(20) UNIQUE,
 
--- --------------------------------------------------------
+    PRIMARY KEY (id_petugas)
+);
 
---
--- Table structure for table `lokasi`
---
+ALTER TABLE petugas
+ADD email VARCHAR(100);
 
-CREATE TABLE `lokasi` (
-  `id_lokasi` int NOT NULL,
-  `nama_lokasi` varchar(100) NOT NULL,
-  `alamat` varchar(200) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE jadwal_pengangkutan (
+    id_jadwal INT AUTO_INCREMENT,
+    id_bin INT,
+    id_petugas INT,
+    tanggal_pengangkutan DATE,
+    status_jadwal VARCHAR(20) DEFAULT 'MENUNGGU',
 
---
--- Dumping data for table `lokasi`
---
+    PRIMARY KEY (id_jadwal),
 
-INSERT INTO `lokasi` (`id_lokasi`, `nama_lokasi`, `alamat`) VALUES
-(1, 'Gedung A', 'Area Kampus A'),
-(2, 'Gedung B', 'Area Kampus B'),
-(3, 'Gedung C', 'Area Kampus C'),
-(4, 'Gedung D', 'Area Kampus D'),
-(5, 'Gedung E', 'Area Kampus E');
+    FOREIGN KEY (id_bin)
+    REFERENCES trash_bin(id_bin),
 
--- --------------------------------------------------------
+    FOREIGN KEY (id_petugas)
+    REFERENCES petugas(id_petugas)
+);
 
---
--- Table structure for table `petugas`
---
+CREATE TABLE riwayat_pengangkutan (
+    id_riwayat INT AUTO_INCREMENT,
+    id_jadwal INT,
+    tanggal_selesai DATE,
+    berat_diangkut DECIMAL(10,2),
 
-CREATE TABLE `petugas` (
-  `id_petugas` int NOT NULL,
-  `nama_petugas` varchar(100) NOT NULL,
-  `no_hp` varchar(20) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+    PRIMARY KEY (id_riwayat),
 
---
--- Dumping data for table `petugas`
---
+    FOREIGN KEY (id_jadwal)
+    REFERENCES jadwal_pengangkutan(id_jadwal)
+);
 
-INSERT INTO `petugas` (`id_petugas`, `nama_petugas`, `no_hp`, `email`) VALUES
-(1, 'Budi', '081111111111', 'budi@gmail.com'),
-(2, 'Andi', '082222222222', 'andi@gmail.com'),
-(3, 'Siti', '083333333333', 'siti@gmail.com'),
-(4, 'Rina', '084444444444', 'rina@gmail.com'),
-(5, 'Doni', '085555555555', 'doni@gmail.com');
+INSERT INTO lokasi (nama_lokasi, alamat)
+VALUES ('Gedung A', 'Area Kampus A');
 
--- --------------------------------------------------------
+INSERT INTO lokasi (nama_lokasi, alamat)
+VALUES ('Gedung B', 'Area Kampus B');
 
---
--- Table structure for table `riwayat_pengangkutan`
---
+INSERT INTO lokasi (nama_lokasi, alamat)
+VALUES ('Gedung C', 'Area Kampus C');
 
-CREATE TABLE `riwayat_pengangkutan` (
-  `id_riwayat` int NOT NULL,
-  `id_jadwal` int DEFAULT NULL,
-  `tanggal_selesai` date DEFAULT NULL,
-  `berat_diangkut` decimal(10,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+INSERT INTO lokasi (nama_lokasi, alamat)
+VALUES ('Gedung D', 'Area Kampus D');
 
---
--- Dumping data for table `riwayat_pengangkutan`
---
+INSERT INTO lokasi (nama_lokasi, alamat)
+VALUES ('Gedung E', 'Area Kampus E');
 
-INSERT INTO `riwayat_pengangkutan` (`id_riwayat`, `id_jadwal`, `tanggal_selesai`, `berat_diangkut`) VALUES
-(1, 1, '2026-06-06', '28.00'),
-(2, 2, '2026-06-06', '30.00'),
-(3, 3, '2026-06-06', '15.00'),
-(4, 4, '2026-06-06', '12.00'),
-(5, 5, '2026-06-06', '10.00');
+INSERT INTO trash_bin
+(nama_bin, kapasitas_maks, status_bin, id_lokasi)
+VALUES ('BIN-01',100,'NORMAL',1);
 
--- --------------------------------------------------------
+INSERT INTO trash_bin
+(nama_bin, kapasitas_maks, status_bin, id_lokasi)
+VALUES ('BIN-02',100,'PENUH',2);
 
---
--- Table structure for table `sensor_data`
---
+INSERT INTO trash_bin
+(nama_bin, kapasitas_maks, status_bin, id_lokasi)
+VALUES ('BIN-03',100,'NORMAL',3);
 
-CREATE TABLE `sensor_data` (
-  `id_sensor` int NOT NULL,
-  `id_bin` int DEFAULT NULL,
-  `kapasitas_terisi` int DEFAULT NULL,
-  `berat_sampah` decimal(10,2) DEFAULT NULL,
-  `waktu_baca` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+INSERT INTO trash_bin
+(nama_bin, kapasitas_maks, status_bin, id_lokasi)
+VALUES ('BIN-04',100,'PENUH',4);
 
---
--- Dumping data for table `sensor_data`
---
+INSERT INTO trash_bin
+(nama_bin, kapasitas_maks, status_bin, id_lokasi)
+VALUES ('BIN-05',100,'NORMAL',5);
 
-INSERT INTO `sensor_data` (`id_sensor`, `id_bin`, `kapasitas_terisi`, `berat_sampah`, `waktu_baca`) VALUES
-(1, 1, 60, '15.00', '2026-06-06 02:15:39'),
-(2, 2, 95, '28.00', '2026-06-06 02:15:39'),
-(3, 3, 50, '12.00', '2026-06-06 02:15:39'),
-(4, 4, 98, '30.00', '2026-06-06 02:15:39'),
-(5, 5, 45, '10.00', '2026-06-06 02:15:39');
+INSERT INTO petugas
+(nama_petugas,no_hp,email)
+VALUES ('Budi','081111111111','budi@gmail.com');
 
--- --------------------------------------------------------
+INSERT INTO petugas
+(nama_petugas,no_hp,email)
+VALUES ('Andi','082222222222','andi@gmail.com');
 
---
--- Table structure for table `trash_bin`
---
+INSERT INTO petugas
+(nama_petugas,no_hp,email)
+VALUES ('Siti','083333333333','siti@gmail.com');
 
-CREATE TABLE `trash_bin` (
-  `id_bin` int NOT NULL,
-  `nama_bin` varchar(100) NOT NULL,
-  `kapasitas_maks` int NOT NULL,
-  `status_bin` varchar(20) DEFAULT 'NORMAL',
-  `id_lokasi` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+INSERT INTO petugas
+(nama_petugas,no_hp,email)
+VALUES ('Rina','084444444444','rina@gmail.com');
 
---
--- Dumping data for table `trash_bin`
---
+INSERT INTO petugas
+(nama_petugas,no_hp,email)
+VALUES ('Doni','085555555555','doni@gmail.com');
 
-INSERT INTO `trash_bin` (`id_bin`, `nama_bin`, `kapasitas_maks`, `status_bin`, `id_lokasi`) VALUES
-(1, 'BIN-01', 100, 'NORMAL', 1),
-(2, 'BIN-02', 100, 'PENUH', 2),
-(3, 'BIN-03', 100, 'NORMAL', 3),
-(4, 'BIN-04', 100, 'PENUH', 4),
-(5, 'BIN-05', 100, 'NORMAL', 5);
+INSERT INTO sensor_data
+(id_bin,kapasitas_terisi,berat_sampah)
+VALUES (1,60,15);
 
--- --------------------------------------------------------
+INSERT INTO sensor_data
+(id_bin,kapasitas_terisi,berat_sampah)
+VALUES (2,95,28);
 
---
--- Table structure for table `users`
---
+INSERT INTO sensor_data
+(id_bin,kapasitas_terisi,berat_sampah)
+VALUES (3,50,12);
 
-CREATE TABLE `users` (
-  `id_user` int NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `role` varchar(20) DEFAULT 'USER'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+INSERT INTO sensor_data
+(id_bin,kapasitas_terisi,berat_sampah)
+VALUES (4,98,30);
 
---
--- Dumping data for table `users`
---
+INSERT INTO sensor_data
+(id_bin,kapasitas_terisi,berat_sampah)
+VALUES (5,45,10);
 
-INSERT INTO `users` (`id_user`, `username`, `password`, `role`) VALUES
-(1, 'admin', 'admin123', 'Admin'),
-(2, 'petugas1', 'petugas123', 'Petugas'),
-(3, 'user1', 'user123', 'User'),
-(4, 'JueViole', '06062026', 'CEO');
+INSERT INTO jadwal_pengangkutan
+(id_bin,id_petugas,tanggal_pengangkutan,status_jadwal)
+VALUES (2,1,CURDATE(),'MENUNGGU');
 
---
--- Indexes for dumped tables
---
+INSERT INTO jadwal_pengangkutan
+(id_bin,id_petugas,tanggal_pengangkutan,status_jadwal)
+VALUES (4,2,CURDATE(),'MENUNGGU');
 
---
--- Indexes for table `jadwal_pengangkutan`
---
-ALTER TABLE `jadwal_pengangkutan`
-  ADD PRIMARY KEY (`id_jadwal`),
-  ADD KEY `id_bin` (`id_bin`),
-  ADD KEY `id_petugas` (`id_petugas`);
+INSERT INTO jadwal_pengangkutan
+(id_bin,id_petugas,tanggal_pengangkutan,status_jadwal)
+VALUES (1,3,CURDATE(),'SELESAI');
 
---
--- Indexes for table `lokasi`
---
-ALTER TABLE `lokasi`
-  ADD PRIMARY KEY (`id_lokasi`);
+INSERT INTO jadwal_pengangkutan
+(id_bin,id_petugas,tanggal_pengangkutan,status_jadwal)
+VALUES (3,4,CURDATE(),'SELESAI');
 
---
--- Indexes for table `petugas`
---
-ALTER TABLE `petugas`
-  ADD PRIMARY KEY (`id_petugas`),
-  ADD UNIQUE KEY `no_hp` (`no_hp`);
+INSERT INTO jadwal_pengangkutan
+(id_bin,id_petugas,tanggal_pengangkutan,status_jadwal)
+VALUES (5,5,CURDATE(),'MENUNGGU');
 
---
--- Indexes for table `riwayat_pengangkutan`
---
-ALTER TABLE `riwayat_pengangkutan`
-  ADD PRIMARY KEY (`id_riwayat`),
-  ADD KEY `id_jadwal` (`id_jadwal`);
+INSERT INTO riwayat_pengangkutan
+(id_jadwal,tanggal_selesai,berat_diangkut)
+VALUES (1,CURDATE(),28);
 
---
--- Indexes for table `sensor_data`
---
-ALTER TABLE `sensor_data`
-  ADD PRIMARY KEY (`id_sensor`),
-  ADD KEY `id_bin` (`id_bin`);
+INSERT INTO riwayat_pengangkutan
+(id_jadwal,tanggal_selesai,berat_diangkut)
+VALUES (2,CURDATE(),30);
 
---
--- Indexes for table `trash_bin`
---
-ALTER TABLE `trash_bin`
-  ADD PRIMARY KEY (`id_bin`),
-  ADD KEY `id_lokasi` (`id_lokasi`);
+INSERT INTO riwayat_pengangkutan
+(id_jadwal,tanggal_selesai,berat_diangkut)
+VALUES (3,CURDATE(),15);
 
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id_user`),
-  ADD UNIQUE KEY `username` (`username`);
+INSERT INTO riwayat_pengangkutan
+(id_jadwal,tanggal_selesai,berat_diangkut)
+VALUES (4,CURDATE(),12);
 
---
--- AUTO_INCREMENT for dumped tables
---
+INSERT INTO riwayat_pengangkutan
+(id_jadwal,tanggal_selesai,berat_diangkut)
+VALUES (5,CURDATE(),10);
 
---
--- AUTO_INCREMENT for table `jadwal_pengangkutan`
---
-ALTER TABLE `jadwal_pengangkutan`
-  MODIFY `id_jadwal` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `lokasi`
---
-ALTER TABLE `lokasi`
-  MODIFY `id_lokasi` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `petugas`
---
-ALTER TABLE `petugas`
-  MODIFY `id_petugas` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `riwayat_pengangkutan`
---
-ALTER TABLE `riwayat_pengangkutan`
-  MODIFY `id_riwayat` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `sensor_data`
---
-ALTER TABLE `sensor_data`
-  MODIFY `id_sensor` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `trash_bin`
---
-ALTER TABLE `trash_bin`
-  MODIFY `id_bin` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id_user` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `jadwal_pengangkutan`
---
-ALTER TABLE `jadwal_pengangkutan`
-  ADD CONSTRAINT `jadwal_pengangkutan_ibfk_1` FOREIGN KEY (`id_bin`) REFERENCES `trash_bin` (`id_bin`),
-  ADD CONSTRAINT `jadwal_pengangkutan_ibfk_2` FOREIGN KEY (`id_petugas`) REFERENCES `petugas` (`id_petugas`);
-
---
--- Constraints for table `riwayat_pengangkutan`
---
-ALTER TABLE `riwayat_pengangkutan`
-  ADD CONSTRAINT `riwayat_pengangkutan_ibfk_1` FOREIGN KEY (`id_jadwal`) REFERENCES `jadwal_pengangkutan` (`id_jadwal`);
-
---
--- Constraints for table `sensor_data`
---
-ALTER TABLE `sensor_data`
-  ADD CONSTRAINT `sensor_data_ibfk_1` FOREIGN KEY (`id_bin`) REFERENCES `trash_bin` (`id_bin`) ON DELETE CASCADE;
-
---
--- Constraints for table `trash_bin`
---
-ALTER TABLE `trash_bin`
-  ADD CONSTRAINT `trash_bin_ibfk_1` FOREIGN KEY (`id_lokasi`) REFERENCES `lokasi` (`id_lokasi`) ON DELETE SET NULL;
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
