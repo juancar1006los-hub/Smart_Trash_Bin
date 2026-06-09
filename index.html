@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Trash Bin Monitoring</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+    <div id="login-page">
+        <ul class="bg-bubbles">
+            <li><i class="fa-solid fa-leaf"></i></li>
+            <li><i class="fa-solid fa-trash-can"></i></li>
+            <li><i class="fa-solid fa-leaf"></i></li>
+            <li><i class="fa-solid fa-recycle"></i></li>
+            <li><i class="fa-solid fa-leaf"></i></li>
+            <li><i class="fa-solid fa-trash"></i></li>
+        </ul>
+
+        <div class="login-box">
+            <h2 class="animated-title">Smart Bin Login</h2>
+            <p style="margin-bottom: 20px; color: #666; font-size: 14px;">Masuk ke sistem monitoring</p>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="doLogin()">Masuk <i class="fa-solid fa-arrow-right-to-bracket"></i></button>
+            <p id="login-error" style="color: red; display: none; margin-top: 10px; font-size: 14px;"></p>
+        </div>
+    </div>
+
+    <div id="dashboard-page" style="display: none;">
+        <div class="sidebar">
+            <h2><i class="fa-solid fa-recycle"></i> Smart Trash</h2>
+            <div class="menu-item active" onclick="loadContent('dashboard', event)"><i class="fa-solid fa-chart-pie"></i> Dashboard Data</div>
+            <div class="menu-item" onclick="loadContent('lokasi', event)"><i class="fa-solid fa-map-location-dot"></i> Data Lokasi</div>
+            <div class="menu-item" onclick="loadContent('petugas', event)"><i class="fa-solid fa-users"></i> Data Petugas</div>
+            <div class="menu-item" onclick="loadContent('jadwal', event)"><i class="fa-solid fa-calendar-days"></i> Jadwal Pengangkutan</div>
+            <div class="menu-item" onclick="loadContent('riwayat', event)"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Pengangkutan</div>
+            <div class="menu-item" onclick="logout()" style="margin-top: 50px; color: #e74c3c;"><i class="fa-solid fa-power-off"></i> Keluar</div>
+        </div>
+
+        <div class="main-content">
+            <div class="topbar">
+                <div class="profile" id="user-profile">Halo, Pengguna <i class="fa-solid fa-circle-user"></i></div>
+            </div>
+            <div class="content-area" id="dynamic-content">
+                </div>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
