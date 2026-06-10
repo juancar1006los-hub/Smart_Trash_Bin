@@ -8,14 +8,15 @@ CORS(app)
 
 def get_db_connection():
     return mysql.connector.connect(
-        host=os.environ.get('DB_HOST', 'localhost'),
-        port=int(os.environ.get('DB_PORT', 4000)),  
-        user=os.environ.get('DB_USER', 'root'),
-        password=os.environ.get('DB_PASS', ''),
-        database=os.environ.get('DB_NAME', 'smart_trash_bin'), 
-        ssl_verify_cert=True,
-        ssl_verify_identity=True,
-        use_pure=True
+        host=os.environ.get('DB_HOST'),
+        port=int(os.environ.get('DB_PORT', 4000)),
+        user=os.environ.get('DB_USER'),
+        password=os.environ.get('DB_PASS'),
+        database=os.environ.get('DB_NAME'),
+        use_pure=True,          
+        ssl_ca=None,            
+        ssl_verify_cert=False,    
+        ssl_verify_identity=False 
     )
 
 @app.route('/api/login', methods=['POST'])
