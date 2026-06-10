@@ -12,7 +12,7 @@ def get_db_connection():
         port=int(os.environ.get('DB_PORT', 4000)),  
         user=os.environ.get('DB_USER', 'root'),
         password=os.environ.get('DB_PASS', ''),
-        database=os.environ.get('DB_NAME', 'uas_smart_trash_bIn'), 
+        database=os.environ.get('DB_NAME', 'smart_trash_bin'), 
         ssl_verify_cert=True,
         ssl_verify_identity=True
     )
