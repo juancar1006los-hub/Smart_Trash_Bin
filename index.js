@@ -1,4 +1,4 @@
-const API_BASE = 'http://127.0.0.1:5000/api'; // Alamat server Python Flask Anda
+const API_BASE = '/api'; // Alamat server Python Flask Anda
 
 // 1. FUNGSI LOGIN VIA DATABASE/API
 async function doLogin() {
