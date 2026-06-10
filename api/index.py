@@ -14,7 +14,8 @@ def get_db_connection():
         password=os.environ.get('DB_PASS', ''),
         database=os.environ.get('DB_NAME', 'smart_trash_bin'), 
         ssl_verify_cert=True,
-        ssl_verify_identity=True
+        ssl_verify_identity=True,
+        use_pure=True
     )
 
 @app.route('/api/login', methods=['POST'])
